@@ -2,7 +2,7 @@ import express from 'express';
 import Movie from '../models/Movie.js';
 import Celebrity from '../models/Celebrity.js';
 import { v4 as uuidv4 } from 'uuid';
-import { DEFAULT_IMAGE_URL } from '../../utils/constants.js';
+import { DEFAULT_IMAGE_URL } from '../utils/constants.js'
 
 const router = express.Router();
 
