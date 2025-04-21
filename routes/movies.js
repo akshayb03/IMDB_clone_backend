@@ -35,4 +35,31 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const movie = await Movie.findOneAndDelete({ movie_id: req.params.id });
+    
+    if (!movie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+
+    await Celebrity.updateMany(
+      { movies: movie.movie_id },
+      { $pull: { movies: movie.movie_id } }
+    );
+
+    res.json({ 
+      success: true,
+      message: 'Movie deleted successfully',
+      deletedMovie: movie
+    });
+  } catch (err) {
+    console.error('Error deleting movie:', err);
+    res.status(500).json({ 
+      error: 'Server error',
+      details: err.message 
+    });
+  }
+});
+
 export default router;
