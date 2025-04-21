@@ -62,4 +62,46 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+router.patch('/:id', async (req, res) => {
+  console.log('inside')
+  try {
+    const movieId = req.params.id;
+    const updates = req.body;
+    
+    if (updates.release_date) {
+      updates.release_date = new Date(updates.release_date);
+    }
+    
+    if (updates.imdb_rating) {
+      updates.imdb_rating = Number(updates.imdb_rating);
+    }
+    
+    if (updates.duration) {
+      updates.duration = Number(updates.duration);
+    }
+
+    const updatedMovie = await Movie.findOneAndUpdate(
+      { movie_id: movieId },
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedMovie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Movie updated successfully',
+      movie: updatedMovie
+    });
+  } catch (err) {
+    console.error('Error updating movie:', err);
+    res.status(500).json({ 
+      error: 'Server error',
+      details: err.message 
+    });
+  }
+});
+
 export default router;
