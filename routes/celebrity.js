@@ -47,4 +47,37 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.patch('/:id', async (req, res) => {
+  try {
+    const actorId = req.params.id;
+    const updates = req.body;
+
+    if (updates.birthday) {
+      updates.birthday = new Date(updates.birthday);
+    }
+
+    const updatedActor = await Celebrity.findOneAndUpdate(
+      { personality_id: actorId },
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedActor) {
+      return res.status(404).json({ message: 'Actor not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Actor updated successfully',
+      actor: updatedActor
+    });
+  } catch (err) {
+    console.error('Error updating actor:', err);
+    res.status(500).json({ 
+      error: 'Server error',
+      details: err.message 
+    });
+  }
+});
+
 export default router;
